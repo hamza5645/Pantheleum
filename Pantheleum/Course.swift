@@ -26,14 +26,13 @@ struct Course: Identifiable, Codable {
     init?(document: QueryDocumentSnapshot) {
         let data = document.data()
         
-        guard let id = data["id"] as? String,
-              let title = data["title"] as? String,
+        guard let title = data["title"] as? String,
               let videoURL = data["videoURL"] as? String,
               let assignedUsers = data["assignedUsers"] as? [String] else {
             return nil
         }
         
-        self.id = id
+        self.id = document.documentID
         self.title = title
         self.description = data["description"] as? String
         self.videoURL = videoURL
@@ -42,7 +41,6 @@ struct Course: Identifiable, Codable {
     
     var dictionary: [String: Any] {
         var dict: [String: Any] = [
-            "id": id,
             "title": title,
             "videoURL": videoURL,
             "assignedUsers": assignedUsers

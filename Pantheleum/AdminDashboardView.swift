@@ -6,20 +6,16 @@ struct AdminDashboardView: View {
     @Binding var isLoggedIn: Bool
     @State private var courses: [Course] = []
     @State private var users: [User] = []
-    @State private var showingAddCourse = false {
-        didSet {
-            if !showingAddCourse {
-                loadCourses()
-            }
-        }
-    }
+    @State private var showingAddCourse = false
 
     var body: some View {
         NavigationView {
             List {
                 Section(header: Text("Courses")) {
                     ForEach(courses) { course in
-                        Text(course.title)
+                        NavigationLink(destination: CourseEditView(course: course, onCourseUpdated: loadCourses)) {
+                            Text(course.title)
+                        }
                     }
                 }
                 
@@ -42,6 +38,7 @@ struct AdminDashboardView: View {
         .onAppear(perform: loadData)
         .sheet(isPresented: $showingAddCourse) {
             CourseCreationView(onCourseCreated: {
+                loadCourses()
                 showingAddCourse = false
             })
         }

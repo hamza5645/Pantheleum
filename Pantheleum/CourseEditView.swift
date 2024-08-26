@@ -24,16 +24,15 @@ struct CourseEditView: View {
                 TextField("Description", text: $description)
                 TextField("Video URL", text: $videoURL)
             }
-            
-            Button("Save Changes") {
-                saveCourse()
-            }
         }
-        .navigationBarTitle("Edit Course", displayMode: .inline)
+        .navigationTitle("Edit Course")
+        .navigationBarItems(trailing: Button("Save") {
+            saveCourse()
+        })
     }
     
     func saveCourse() {
-        let updatedCourse = Course(id: course.id, title: title, description: description, videoURL: videoURL, assignedUsers: course.assignedUsers)
+        let updatedCourse = Course(id: course.id, title: title, description: description.isEmpty ? nil : description, videoURL: videoURL, assignedUsers: course.assignedUsers)
         let db = Firestore.firestore()
         db.collection("courses").document(updatedCourse.id).setData(updatedCourse.dictionary) { error in
             if let error = error {
