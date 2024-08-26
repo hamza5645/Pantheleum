@@ -8,6 +8,7 @@ struct CourseCreationView: View {
     @State private var videoURL = ""
     @State private var errorMessage = ""
     @State private var isLoading = false
+    var onCourseCreated: () -> Void
 
     var body: some View {
         NavigationView {
@@ -70,6 +71,7 @@ struct CourseCreationView: View {
             if let error = error {
                 errorMessage = "Error creating course: \(error.localizedDescription)"
             } else {
+                onCourseCreated()
                 presentationMode.wrappedValue.dismiss()
             }
         }

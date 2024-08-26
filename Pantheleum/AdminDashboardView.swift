@@ -6,6 +6,7 @@ struct AdminDashboardView: View {
     @Binding var isLoggedIn: Bool
     @State private var courses: [Course] = []
     @State private var showingCourseCreation = false
+    @State private var refreshTrigger = false
 
     var body: some View {
         NavigationView {
@@ -31,9 +32,12 @@ struct AdminDashboardView: View {
             }
         }
         .sheet(isPresented: $showingCourseCreation) {
-            CourseCreationView()
+            CourseCreationView(onCourseCreated: {
+                refreshTrigger.toggle()
+            })
         }
         .onAppear(perform: loadCourses)
+        .onChange(of: refreshTrigger) { _ in loadCourses() }
     }
 
     func loadCourses() {
