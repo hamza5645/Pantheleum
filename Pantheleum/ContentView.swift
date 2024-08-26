@@ -6,18 +6,11 @@
 //
 
 import SwiftUI
-import FirebaseCore
-import FirebaseAuth
-import FirebaseFirestore
 
 struct ContentView: View {
     @State private var isLoggedIn = false
     @State private var showSignUp = false
-    @State private var isAdmin = false {
-        didSet {
-            print("Debug: ContentView isAdmin changed to \(isAdmin)")
-        }
-    }
+    @State private var isAdmin = false
 
     var body: some View {
         Group {
@@ -28,13 +21,13 @@ struct ContentView: View {
                     CourseListView(isLoggedIn: $isLoggedIn)
                 }
             } else {
-                if showSignUp {
-                    SignUpView(isLoggedIn: $isLoggedIn, showSignUp: $showSignUp)
-                } else {
-                    LoginView(isLoggedIn: $isLoggedIn, isAdmin: $isAdmin, showSignUp: $showSignUp)
-                }
+                LoginView(isLoggedIn: $isLoggedIn, isAdmin: $isAdmin, showSignUp: $showSignUp)
+                    .fullScreenCover(isPresented: $showSignUp) {
+                        SignUpView(isLoggedIn: $isLoggedIn, showSignUp: $showSignUp, isAdmin: $isAdmin)
+                    }
             }
         }
+        .animation(.default, value: showSignUp)
     }
 }
 

@@ -35,29 +35,22 @@ struct CourseListView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                List(courses) { course in
-                    NavigationLink(destination: CourseDetailView(course: course)) {
-                        VStack(alignment: .leading) {
-                            Text(course.title)
-                                .font(.headline)
-                            if let description = course.description {
-                                Text(description)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                            }
+            List(courses) { course in
+                NavigationLink(destination: CourseDetailView(course: course)) {
+                    VStack(alignment: .leading) {
+                        Text(course.title)
+                            .font(.headline)
+                        if let description = course.description {
+                            Text(description)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
                         }
                     }
                 }
-                
-                Button("Debug: Check Admin Status") {
-                    checkAdminStatus()
-                }
-                .padding()
             }
             .navigationTitle("My Courses")
-            .navigationBarItems(trailing: Button("Log Out") {
-                logOut()
+            .navigationBarItems(trailing: Button(action: logOut) {
+                Image(systemName: "rectangle.portrait.and.arrow.right")
             })
             .onAppear(perform: loadAssignedCourses)
         }
@@ -72,8 +65,8 @@ struct CourseListView: View {
                 if let error = error {
                     print("Error getting documents: \(error)")
                 } else {
-                    courses = querySnapshot?.documents.compactMap { document in
-                        try? document.data(as: Course.self)
+                    self.courses = querySnapshot?.documents.compactMap { document in
+                        Course(document: document)
                     } ?? []
                 }
             }

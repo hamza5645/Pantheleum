@@ -4,6 +4,7 @@ import FirebaseAuth
 struct SignUpView: View {
     @Binding var isLoggedIn: Bool
     @Binding var showSignUp: Bool
+    @Binding var isAdmin: Bool
     @State private var email = ""
     @State private var password = ""
     @State private var confirmPassword = ""
@@ -73,9 +74,10 @@ struct SignUpView: View {
             if let error = error {
                 errorMessage = error.localizedDescription
             } else if let user = result?.user {
-                UserManager.shared.createUser(email: user.email ?? "") { result in
+                UserManager.shared.createUser(email: user.email ?? "", isAdmin: false) { result in
                     switch result {
                     case .success(_):
+                        self.isAdmin = false  // Explicitly set isAdmin to false
                         isLoggedIn = true
                         showSignUp = false
                     case .failure(let error):

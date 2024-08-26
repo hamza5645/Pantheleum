@@ -6,7 +6,6 @@ struct LoginView: View {
     @Binding var isLoggedIn: Bool
     @Binding var isAdmin: Bool
     @Binding var showSignUp: Bool
-    
     @State private var email = ""
     @State private var password = ""
     @State private var errorMessage = ""
@@ -63,7 +62,7 @@ struct LoginView: View {
             .navigationBarHidden(true)
         }
         .fullScreenCover(isPresented: $showSignUp) {
-            SignUpView(isLoggedIn: $isLoggedIn, showSignUp: $showSignUp)
+            SignUpView(isLoggedIn: $isLoggedIn, showSignUp: $showSignUp, isAdmin: $isAdmin)
         }
     }
     

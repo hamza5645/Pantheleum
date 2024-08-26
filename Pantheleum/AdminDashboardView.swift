@@ -5,54 +5,83 @@ import FirebaseAuth
 struct AdminDashboardView: View {
     @Binding var isLoggedIn: Bool
     @State private var courses: [Course] = []
-    
+    @State private var users: [User] = []
+    @State private var showingAddCourse = false {
+        didSet {
+            if !showingAddCourse {
+                loadCourses()
+            }
+        }
+    }
+
     var body: some View {
         NavigationView {
-            VStack {
-                Text("Admin Dashboard")
-                    .font(.largeTitle)
-                    .padding()
-                
-                // Add your admin dashboard content here
-                
-                Button("Debug: Print All Users") {
-                    debugPrintAllUsers()
+            List {
+                Section(header: Text("Courses")) {
+                    ForEach(courses) { course in
+                        Text(course.title)
+                    }
                 }
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(8)
+                
+                Section(header: Text("Users")) {
+                    ForEach(users, id: \.id) { user in
+                        Text(user.email)
+                    }
+                }
             }
-            .navigationBarItems(trailing: Button("Log Out") {
-                logOut()
+            .navigationTitle("Admin Dashboard")
+            .navigationBarItems(
+                leading: Button("Add Course") {
+                    showingAddCourse = true
+                },
+                trailing: Button(action: logOut) {
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                }
+            )
+        }
+        .onAppear(perform: loadData)
+        .sheet(isPresented: $showingAddCourse) {
+            CourseCreationView(onCourseCreated: {
+                showingAddCourse = false
             })
         }
-        .onAppear(perform: loadCourses)
     }
-    
+
+    func loadData() {
+        loadCourses()
+        loadUsers()
+    }
+
     func loadCourses() {
-        // Implement course loading logic
+        let db = Firestore.firestore()
+        db.collection("courses").getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error getting documents: \(error)")
+            } else {
+                self.courses = querySnapshot?.documents.compactMap { document in
+                    Course(document: document)
+                } ?? []
+            }
+        }
     }
-    
+
+    func loadUsers() {
+        UserManager.shared.getAllUsers { result in
+            switch result {
+            case .success(let fetchedUsers):
+                self.users = fetchedUsers
+            case .failure(let error):
+                print("Failed to fetch users: \(error.localizedDescription)")
+            }
+        }
+    }
+
     func logOut() {
         do {
             try Auth.auth().signOut()
             isLoggedIn = false
         } catch {
             print("Error signing out: \(error.localizedDescription)")
-        }
-    }
-    
-    func debugPrintAllUsers() {
-        UserManager.shared.getAllUsers { result in
-            switch result {
-            case .success(let users):
-                print("Debug: All users in the database:")
-                for user in users {
-                    print("User ID: \(user.id), Email: \(user.email), Is Admin: \(user.isAdmin)")
-                }
-            case .failure(let error):
-                print("Debug: Failed to fetch users: \(error.localizedDescription)")
-            }
         }
     }
 }

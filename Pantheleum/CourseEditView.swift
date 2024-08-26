@@ -35,14 +35,12 @@ struct CourseEditView: View {
     func saveCourse() {
         let updatedCourse = Course(id: course.id, title: title, description: description, videoURL: videoURL, assignedUsers: course.assignedUsers)
         let db = Firestore.firestore()
-        if let id = updatedCourse.id {
-            db.collection("courses").document(id).setData(updatedCourse.dictionary) { error in
-                if let error = error {
-                    print("Error updating document: \(error)")
-                } else {
-                    onCourseUpdated()
-                    presentationMode.wrappedValue.dismiss()
-                }
+        db.collection("courses").document(updatedCourse.id).setData(updatedCourse.dictionary) { error in
+            if let error = error {
+                print("Error updating document: \(error)")
+            } else {
+                onCourseUpdated()
+                presentationMode.wrappedValue.dismiss()
             }
         }
     }

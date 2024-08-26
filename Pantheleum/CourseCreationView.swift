@@ -49,24 +49,14 @@ struct CourseCreationView: View {
         errorMessage = ""
         
         let newCourse = Course(
-            id: nil,
             title: title,
-            description: description.isEmpty ? nil : description,  // Make it nil if empty
+            description: description.isEmpty ? nil : description,
             videoURL: videoURL,
             assignedUsers: []
         )
         
         let db = Firestore.firestore()
-        var courseData: [String: Any] = [
-            "title": newCourse.title,
-            "videoURL": newCourse.videoURL,
-            "assignedUsers": newCourse.assignedUsers
-        ]
-        if let description = newCourse.description {
-            courseData["description"] = description
-        }
-        
-        db.collection("courses").addDocument(data: courseData) { error in
+        db.collection("courses").addDocument(data: newCourse.dictionary) { error in
             isLoading = false
             if let error = error {
                 errorMessage = "Error creating course: \(error.localizedDescription)"
