@@ -16,15 +16,15 @@ struct ContentView: View {
         _isLoggedIn = State(initialValue: Auth.auth().currentUser != nil)
         
         // Customize the navigation bar appearance
-        UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor(Color.pantheleumBlue)]
-        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(Color.pantheleumBlue)]
+        UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor(Color("PantheleumBlue"))]
+        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(Color("PantheleumBlue"))]
     }
     
     var body: some View {
         if isLoggedIn {
             CourseListView(isLoggedIn: $isLoggedIn)
         } else {
-            LoginView(isLoggedIn: $isLoggedIn)
+            AuthenticationView(isLoggedIn: $isLoggedIn)
         }
     }
 }
