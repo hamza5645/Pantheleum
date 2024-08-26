@@ -48,12 +48,18 @@ struct SignUpView: View {
                 }
                 .padding(.horizontal)
                 
+                Button("Already have an account? Log In") {
+                    showSignUp = false
+                }
+                .foregroundColor(Color("PantheleumBlue"))
+                .padding(.top)
+                
                 Spacer()
             }
+            .navigationBarTitle("Sign Up", displayMode: .inline)
             .navigationBarItems(leading: Button("Cancel") {
                 showSignUp = false
             })
-            .navigationBarTitle("Sign Up", displayMode: .inline)
         }
     }
     

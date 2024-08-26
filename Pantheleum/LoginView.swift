@@ -3,52 +3,64 @@ import FirebaseAuth
 
 struct LoginView: View {
     @Binding var isLoggedIn: Bool
-    @Binding var showLogin: Bool
     @State private var email = ""
     @State private var password = ""
     @State private var errorMessage = ""
+    @State private var showSignUp = false
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
-                Image("logo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 100)
-                    .padding(.top, 50)
-                
-                TextField("Email", text: $email)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .autocapitalization(.none)
-                    .keyboardType(.emailAddress)
-                    .padding(.horizontal)
-                
-                SecureField("Password", text: $password)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(.horizontal)
-                
-                if !errorMessage.isEmpty {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .padding()
+            GeometryReader { geometry in
+                VStack {
+                    Spacer()
+                    
+                    VStack(spacing: 30) {
+                        Image("logo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 100)
+                        
+                        VStack(spacing: 20) {
+                            TextField("Email", text: $email)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .autocapitalization(.none)
+                                .keyboardType(.emailAddress)
+                            
+                            SecureField("Password", text: $password)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                        }
+                        
+                        if !errorMessage.isEmpty {
+                            Text(errorMessage)
+                                .foregroundColor(.red)
+                                .multilineTextAlignment(.center)
+                        }
+                        
+                        Button(action: login) {
+                            Text("Log In")
+                                .foregroundColor(Color("PantheleumBackground"))
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color("PantheleumBlue"))
+                                .cornerRadius(10)
+                        }
+                        
+                        Button("Don't have an account? Sign Up") {
+                            showSignUp = true
+                        }
+                        .foregroundColor(Color("PantheleumBlue"))
+                    }
+                    .frame(width: min(geometry.size.width - 40, 340))
+                    .padding(.vertical, 20)
+                    
+                    Spacer()
                 }
-                
-                Button(action: login) {
-                    Text("Log In")
-                        .foregroundColor(Color("PantheleumBackground"))
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color("PantheleumBlue"))
-                        .cornerRadius(10)
-                }
-                .padding(.horizontal)
-                
-                Spacer()
+                .frame(width: geometry.size.width)
             }
-            .navigationBarItems(leading: Button("Cancel") {
-                showLogin = false
-            })
-            .navigationBarTitle("Log In", displayMode: .inline)
+            .navigationBarHidden(true)
+        }
+        .fullScreenCover(isPresented: $showSignUp) {
+            SignUpView(isLoggedIn: $isLoggedIn, showSignUp: $showSignUp)
         }
     }
     
@@ -58,7 +70,6 @@ struct LoginView: View {
                 errorMessage = error.localizedDescription
             } else {
                 isLoggedIn = true
-                showLogin = false
             }
         }
     }

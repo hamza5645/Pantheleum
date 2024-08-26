@@ -24,7 +24,7 @@ struct ContentView: View {
         if isLoggedIn {
             CourseListView(isLoggedIn: $isLoggedIn)
         } else {
-            AuthenticationView(isLoggedIn: $isLoggedIn)
+            LoginView(isLoggedIn: $isLoggedIn)
         }
     }
 }
