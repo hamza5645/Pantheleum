@@ -1,13 +1,15 @@
 import SwiftUI
 import FirebaseAuth
+import FirebaseFirestore
 
 struct LoginView: View {
     @Binding var isLoggedIn: Bool
+    @Binding var isAdmin: Bool
     @State private var email = ""
     @State private var password = ""
     @State private var errorMessage = ""
-    @State private var showSignUp = false
-    
+    @State private var showSignUp = false  // Add this line
+
     var body: some View {
         NavigationView {
             GeometryReader { geometry in
@@ -69,6 +71,22 @@ struct LoginView: View {
             if let error = error {
                 errorMessage = error.localizedDescription
             } else {
+                checkAdminStatus()
+            }
+        }
+    }
+    
+    func checkAdminStatus() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let db = Firestore.firestore()
+        db.collection("users").document(uid).getDocument { (document, error) in
+            if let document = document, document.exists {
+                if let isAdmin = document.data()?["isAdmin"] as? Bool, isAdmin {
+                    self.isAdmin = true
+                }
+                isLoggedIn = true
+            } else {
+                print("User document does not exist")
                 isLoggedIn = true
             }
         }

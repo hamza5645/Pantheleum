@@ -11,21 +11,32 @@ import FirebaseAuth
 
 struct ContentView: View {
     @State private var isLoggedIn = false
-    
-    init() {
-        _isLoggedIn = State(initialValue: Auth.auth().currentUser != nil)
-        
-        // Customize the navigation bar appearance
-        UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor(Color("PantheleumBlue"))]
-        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(Color("PantheleumBlue"))]
-    }
-    
+    @State private var isAdmin = false
+
     var body: some View {
         if isLoggedIn {
-            CourseListView(isLoggedIn: $isLoggedIn)
+            if isAdmin {
+                AdminDashboardView(isLoggedIn: $isLoggedIn)
+            } else {
+                CourseListView(isLoggedIn: $isLoggedIn)
+            }
         } else {
-            LoginView(isLoggedIn: $isLoggedIn)
+            LoginView(isLoggedIn: $isLoggedIn, isAdmin: $isAdmin)
         }
+    }
+
+    init() {
+        // Check if user is already logged in
+        if let user = Auth.auth().currentUser {
+            isLoggedIn = true
+            checkAdminStatus(userId: user.uid)
+        }
+    }
+
+    private func checkAdminStatus(userId: String) {
+        // Here you would typically check your database to see if the user is an admin
+        // For this example, we'll just set it to false
+        isAdmin = false
     }
 }
 
