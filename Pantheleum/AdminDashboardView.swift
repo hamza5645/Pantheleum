@@ -5,64 +5,54 @@ import FirebaseAuth
 struct AdminDashboardView: View {
     @Binding var isLoggedIn: Bool
     @State private var courses: [Course] = []
-    @State private var showingCourseCreation = false
-    @State private var refreshTrigger = false
-
+    
     var body: some View {
         NavigationView {
-            List {
-                ForEach(courses) { course in
-                    NavigationLink(destination: CourseEditView(course: course, onCourseUpdated: {
-                        refreshTrigger.toggle()
-                    })) {
-                        Text(course.title)
-                    }
+            VStack {
+                Text("Admin Dashboard")
+                    .font(.largeTitle)
+                    .padding()
+                
+                // Add your admin dashboard content here
+                
+                Button("Debug: Print All Users") {
+                    debugPrintAllUsers()
                 }
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(8)
             }
-            .navigationTitle("Admin Dashboard")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Log Out") {
-                        logOut()
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Add Course") {
-                        showingCourseCreation = true
-                    }
-                }
-            }
-        }
-        .sheet(isPresented: $showingCourseCreation) {
-            CourseCreationView(onCourseCreated: {
-                refreshTrigger.toggle()
+            .navigationBarItems(trailing: Button("Log Out") {
+                logOut()
             })
         }
         .onAppear(perform: loadCourses)
-        .onChange(of: refreshTrigger) { _, _ in 
-            loadCourses()
-        }
     }
-
+    
     func loadCourses() {
-        let db = Firestore.firestore()
-        db.collection("courses").getDocuments { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting documents: \(error)")
-            } else {
-                courses = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: Course.self)
-                } ?? []
-            }
-        }
+        // Implement course loading logic
     }
-
+    
     func logOut() {
         do {
             try Auth.auth().signOut()
             isLoggedIn = false
         } catch {
             print("Error signing out: \(error.localizedDescription)")
+        }
+    }
+    
+    func debugPrintAllUsers() {
+        UserManager.shared.getAllUsers { result in
+            switch result {
+            case .success(let users):
+                print("Debug: All users in the database:")
+                for user in users {
+                    print("User ID: \(user.id), Email: \(user.email), Is Admin: \(user.isAdmin)")
+                }
+            case .failure(let error):
+                print("Debug: Failed to fetch users: \(error.localizedDescription)")
+            }
         }
     }
 }

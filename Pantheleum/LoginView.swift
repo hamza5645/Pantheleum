@@ -5,11 +5,12 @@ import FirebaseFirestore
 struct LoginView: View {
     @Binding var isLoggedIn: Bool
     @Binding var isAdmin: Bool
+    @Binding var showSignUp: Bool
+    
     @State private var email = ""
     @State private var password = ""
     @State private var errorMessage = ""
-    @State private var showSignUp = false  // Add this line
-
+    
     var body: some View {
         NavigationView {
             GeometryReader { geometry in
@@ -71,20 +72,26 @@ struct LoginView: View {
             if let error = error {
                 errorMessage = error.localizedDescription
             } else {
+                print("Debug: Login successful")
                 checkAdminStatus()
             }
         }
     }
     
     func checkAdminStatus() {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("Debug: No authenticated user found")
+            return
+        }
         UserManager.shared.getUser(uid: uid) { result in
             switch result {
             case .success(let user):
+                print("Debug: User fetched - isAdmin: \(user.isAdmin)")
                 self.isAdmin = user.isAdmin
+                print("Debug: isAdmin set to \(self.isAdmin)")
                 isLoggedIn = true
             case .failure(let error):
-                print("Error fetching user: \(error.localizedDescription)")
+                print("Debug: Error fetching user: \(error.localizedDescription)")
                 isLoggedIn = true
             }
         }

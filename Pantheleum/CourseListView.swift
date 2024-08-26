@@ -35,18 +35,25 @@ struct CourseListView: View {
     
     var body: some View {
         NavigationView {
-            List(courses) { course in
-                NavigationLink(destination: CourseDetailView(course: course)) {
-                    VStack(alignment: .leading) {
-                        Text(course.title)
-                            .font(.headline)
-                        if let description = course.description {
-                            Text(description)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+            VStack {
+                List(courses) { course in
+                    NavigationLink(destination: CourseDetailView(course: course)) {
+                        VStack(alignment: .leading) {
+                            Text(course.title)
+                                .font(.headline)
+                            if let description = course.description {
+                                Text(description)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
                         }
                     }
                 }
+                
+                Button("Debug: Check Admin Status") {
+                    checkAdminStatus()
+                }
+                .padding()
             }
             .navigationTitle("My Courses")
             .navigationBarItems(trailing: Button("Log Out") {
@@ -78,6 +85,21 @@ struct CourseListView: View {
             isLoggedIn = false
         } catch {
             print("Error signing out: \(error.localizedDescription)")
+        }
+    }
+    
+    func checkAdminStatus() {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("Debug: No authenticated user found")
+            return
+        }
+        UserManager.shared.getUser(uid: uid) { result in
+            switch result {
+            case .success(let user):
+                print("Debug: Current user isAdmin: \(user.isAdmin)")
+            case .failure(let error):
+                print("Debug: Error fetching user: \(error.localizedDescription)")
+            }
         }
     }
 }

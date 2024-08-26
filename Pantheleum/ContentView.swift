@@ -12,49 +12,27 @@ import FirebaseFirestore
 
 struct ContentView: View {
     @State private var isLoggedIn = false
-    @State private var isAdmin = false
-    @State private var isLoading = true
+    @State private var showSignUp = false
+    @State private var isAdmin = false {
+        didSet {
+            print("Debug: ContentView isAdmin changed to \(isAdmin)")
+        }
+    }
 
     var body: some View {
         Group {
-            if isLoading {
-                ProgressView()
-            } else if isLoggedIn {
+            if isLoggedIn {
                 if isAdmin {
                     AdminDashboardView(isLoggedIn: $isLoggedIn)
                 } else {
                     CourseListView(isLoggedIn: $isLoggedIn)
                 }
             } else {
-                LoginView(isLoggedIn: $isLoggedIn, isAdmin: $isAdmin)
-            }
-        }
-        .onAppear(perform: checkAuthState)
-    }
-
-    private func checkAuthState() {
-        if let user = Auth.auth().currentUser {
-            isLoggedIn = true
-            checkAdminStatus(userId: user.uid)
-        } else {
-            isLoggedIn = false
-            isAdmin = false
-        }
-        isLoading = false
-    }
-
-    private func checkAdminStatus(userId: String) {
-        let db = Firestore.firestore()
-        db.collection("users").document(userId).getDocument { (document, error) in
-            if let document = document, document.exists {
-                if let isAdmin = document.data()?["isAdmin"] as? Bool {
-                    self.isAdmin = isAdmin
+                if showSignUp {
+                    SignUpView(isLoggedIn: $isLoggedIn, showSignUp: $showSignUp)
                 } else {
-                    self.isAdmin = false
+                    LoginView(isLoggedIn: $isLoggedIn, isAdmin: $isAdmin, showSignUp: $showSignUp)
                 }
-            } else {
-                print("User document does not exist")
-                self.isAdmin = false
             }
         }
     }
