@@ -11,7 +11,7 @@ struct CourseDetailView: View {
                 .font(.title)
                 .foregroundColor(Color.pantheleumBlue)
             
-            Text(course.description)
+            Text(course.description ?? "")
                 .font(.body)
             
             Text("Course Content")
@@ -37,7 +37,15 @@ struct CourseListView: View {
         NavigationView {
             List(courses) { course in
                 NavigationLink(destination: CourseDetailView(course: course)) {
-                    Text(course.title)
+                    VStack(alignment: .leading) {
+                        Text(course.title)
+                            .font(.headline)
+                        if let description = course.description {
+                            Text(description)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                    }
                 }
             }
             .navigationTitle("My Courses")

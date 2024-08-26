@@ -4,7 +4,7 @@ import FirebaseFirestore
 struct CourseCreationView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var title = ""
-    @State private var description = ""
+    @State private var description = ""  // Keep this as String, but make it optional when creating the Course
     @State private var videoURL = ""
     @State private var errorMessage = ""
     @State private var isLoading = false
@@ -14,7 +14,7 @@ struct CourseCreationView: View {
             Form {
                 Section(header: Text("Course Details")) {
                     TextField("Title", text: $title)
-                    TextField("Description", text: $description)
+                    TextField("Description (Optional)", text: $description)
                     TextField("Video URL", text: $videoURL)
                 }
                 
@@ -33,7 +33,7 @@ struct CourseCreationView: View {
                             Text("Create Course")
                         }
                     }
-                    .disabled(isLoading || title.isEmpty || description.isEmpty || videoURL.isEmpty)
+                    .disabled(isLoading || title.isEmpty || videoURL.isEmpty)  // Remove description from this check
                 }
             }
             .navigationBarTitle("Create New Course", displayMode: .inline)
@@ -47,15 +47,25 @@ struct CourseCreationView: View {
         isLoading = true
         errorMessage = ""
         
-        let newCourse = Course(id: nil, title: title, description: description, videoURL: videoURL, assignedUsers: [])
+        let newCourse = Course(
+            id: nil,
+            title: title,
+            description: description.isEmpty ? nil : description,  // Make it nil if empty
+            videoURL: videoURL,
+            assignedUsers: []
+        )
         
         let db = Firestore.firestore()
-        db.collection("courses").addDocument(data: [
+        var courseData: [String: Any] = [
             "title": newCourse.title,
-            "description": newCourse.description,
             "videoURL": newCourse.videoURL,
             "assignedUsers": newCourse.assignedUsers
-        ]) { error in
+        ]
+        if let description = newCourse.description {
+            courseData["description"] = description
+        }
+        
+        db.collection("courses").addDocument(data: courseData) { error in
             isLoading = false
             if let error = error {
                 errorMessage = "Error creating course: \(error.localizedDescription)"

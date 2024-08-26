@@ -11,7 +11,7 @@ struct CourseEditView: View {
     init(course: Course) {
         _course = State(initialValue: course)
         _title = State(initialValue: course.title)
-        _description = State(initialValue: course.description)
+        _description = State(initialValue: course.description ?? "")
         _videoURL = State(initialValue: course.videoURL)
     }
     
