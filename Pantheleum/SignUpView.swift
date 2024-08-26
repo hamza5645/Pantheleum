@@ -72,9 +72,16 @@ struct SignUpView: View {
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             if let error = error {
                 errorMessage = error.localizedDescription
-            } else {
-                isLoggedIn = true
-                showSignUp = false
+            } else if let user = result?.user {
+                UserManager.shared.createUser(email: user.email ?? "") { result in
+                    switch result {
+                    case .success(_):
+                        isLoggedIn = true
+                        showSignUp = false
+                    case .failure(let error):
+                        errorMessage = error.localizedDescription
+                    }
+                }
             }
         }
     }

@@ -78,15 +78,13 @@ struct LoginView: View {
     
     func checkAdminStatus() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
-        let db = Firestore.firestore()
-        db.collection("users").document(uid).getDocument { (document, error) in
-            if let document = document, document.exists {
-                if let isAdmin = document.data()?["isAdmin"] as? Bool, isAdmin {
-                    self.isAdmin = true
-                }
+        UserManager.shared.getUser(uid: uid) { result in
+            switch result {
+            case .success(let user):
+                self.isAdmin = user.isAdmin
                 isLoggedIn = true
-            } else {
-                print("User document does not exist")
+            case .failure(let error):
+                print("Error fetching user: \(error.localizedDescription)")
                 isLoggedIn = true
             }
         }
