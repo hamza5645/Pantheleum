@@ -7,9 +7,16 @@ struct LoginView: View {
     @State private var password = ""
     @State private var errorMessage = ""
     @State private var isSignUp = false
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack {
+            Image("logo")
+                .resizable()
+                .scaledToFit()
+                .frame(height: 100)
+                .padding(.bottom, 50)
+            
             TextField("Email", text: $email)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .autocapitalization(.none)
@@ -26,21 +33,34 @@ struct LoginView: View {
                     .padding()
             }
             
-            Button(isSignUp ? "Sign Up" : "Login") {
+            Button(action: {
                 if isSignUp {
                     signUp()
                 } else {
                     login()
                 }
+            }) {
+                Text(isSignUp ? "Sign Up" : "Login")
+                    .foregroundColor(Color.pantheleumBackground)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.pantheleumBlue)
+                    .cornerRadius(10)
             }
-            .padding()
+            .padding(.horizontal)
             
-            Button(isSignUp ? "Already have an account? Log in" : "Don't have an account? Sign up") {
-                isSignUp.toggle()
-                errorMessage = ""
+            Button(action: { isSignUp.toggle() }) {
+                Text(isSignUp ? "Already have an account? Log in" : "Don't have an account? Sign up")
+                    .foregroundColor(Color.pantheleumBlue)
             }
             .padding()
         }
+        .background(
+            Image("EngineeringBackground")
+                .resizable()
+                .opacity(colorScheme == .dark ? 0.05 : 0.1)
+        )
+        .foregroundColor(Color.pantheleumText)
     }
     
     func login() {

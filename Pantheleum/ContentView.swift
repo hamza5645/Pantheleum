@@ -14,6 +14,10 @@ struct ContentView: View {
     
     init() {
         _isLoggedIn = State(initialValue: Auth.auth().currentUser != nil)
+        
+        // Customize the navigation bar appearance
+        UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor(Color.pantheleumBlue)]
+        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(Color.pantheleumBlue)]
     }
     
     var body: some View {
