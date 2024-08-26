@@ -12,7 +12,9 @@ struct AdminDashboardView: View {
         NavigationView {
             List {
                 ForEach(courses) { course in
-                    NavigationLink(destination: CourseEditView(course: course)) {
+                    NavigationLink(destination: CourseEditView(course: course, onCourseUpdated: {
+                        refreshTrigger.toggle()
+                    })) {
                         Text(course.title)
                     }
                 }

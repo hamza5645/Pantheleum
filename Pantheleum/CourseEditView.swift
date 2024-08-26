@@ -7,12 +7,14 @@ struct CourseEditView: View {
     @State private var title: String
     @State private var description: String
     @State private var videoURL: String
+    var onCourseUpdated: () -> Void
     
-    init(course: Course) {
+    init(course: Course, onCourseUpdated: @escaping () -> Void) {
         _course = State(initialValue: course)
         _title = State(initialValue: course.title)
         _description = State(initialValue: course.description ?? "")
         _videoURL = State(initialValue: course.videoURL)
+        self.onCourseUpdated = onCourseUpdated
     }
     
     var body: some View {
@@ -38,6 +40,7 @@ struct CourseEditView: View {
                 if let error = error {
                     print("Error updating document: \(error)")
                 } else {
+                    onCourseUpdated()
                     presentationMode.wrappedValue.dismiss()
                 }
             }
