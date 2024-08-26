@@ -6,7 +6,9 @@ struct CourseCreationView: View {
     @State private var title = ""
     @State private var description = ""
     @State private var videoURL = ""
-    
+    @State private var errorMessage = ""
+    @State private var isLoading = false
+
     var body: some View {
         NavigationView {
             Form {
@@ -16,8 +18,22 @@ struct CourseCreationView: View {
                     TextField("Video URL", text: $videoURL)
                 }
                 
-                Button("Create Course") {
-                    createCourse()
+                if !errorMessage.isEmpty {
+                    Section {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                    }
+                }
+                
+                Section {
+                    Button(action: createCourse) {
+                        if isLoading {
+                            ProgressView()
+                        } else {
+                            Text("Create Course")
+                        }
+                    }
+                    .disabled(isLoading || title.isEmpty || description.isEmpty || videoURL.isEmpty)
                 }
             }
             .navigationBarTitle("Create New Course", displayMode: .inline)
@@ -28,11 +44,21 @@ struct CourseCreationView: View {
     }
     
     func createCourse() {
+        isLoading = true
+        errorMessage = ""
+        
         let newCourse = Course(id: nil, title: title, description: description, videoURL: videoURL, assignedUsers: [])
+        
         let db = Firestore.firestore()
-        db.collection("courses").addDocument(data: newCourse.dictionary) { error in
+        db.collection("courses").addDocument(data: [
+            "title": newCourse.title,
+            "description": newCourse.description,
+            "videoURL": newCourse.videoURL,
+            "assignedUsers": newCourse.assignedUsers
+        ]) { error in
+            isLoading = false
             if let error = error {
-                print("Error adding document: \(error)")
+                errorMessage = "Error creating course: \(error.localizedDescription)"
             } else {
                 presentationMode.wrappedValue.dismiss()
             }
