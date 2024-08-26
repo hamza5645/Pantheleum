@@ -8,35 +8,55 @@
 import SwiftUI
 import FirebaseCore
 import FirebaseAuth
+import FirebaseFirestore
 
 struct ContentView: View {
     @State private var isLoggedIn = false
     @State private var isAdmin = false
+    @State private var isLoading = true
 
     var body: some View {
-        if isLoggedIn {
-            if isAdmin {
-                AdminDashboardView(isLoggedIn: $isLoggedIn)
+        Group {
+            if isLoading {
+                ProgressView()
+            } else if isLoggedIn {
+                if isAdmin {
+                    AdminDashboardView(isLoggedIn: $isLoggedIn)
+                } else {
+                    CourseListView(isLoggedIn: $isLoggedIn)
+                }
             } else {
-                CourseListView(isLoggedIn: $isLoggedIn)
+                LoginView(isLoggedIn: $isLoggedIn, isAdmin: $isAdmin)
             }
-        } else {
-            LoginView(isLoggedIn: $isLoggedIn, isAdmin: $isAdmin)
         }
+        .onAppear(perform: checkAuthState)
     }
 
-    init() {
-        // Check if user is already logged in
+    private func checkAuthState() {
         if let user = Auth.auth().currentUser {
             isLoggedIn = true
             checkAdminStatus(userId: user.uid)
+        } else {
+            isLoggedIn = false
+            isAdmin = false
         }
+        isLoading = false
     }
 
     private func checkAdminStatus(userId: String) {
-        // Here you would typically check your database to see if the user is an admin
-        // For this example, we'll just set it to false
-        isAdmin = false
+        let db = Firestore.firestore()
+        db.collection("users").document(userId).getDocument { (document, error) in
+            if let document = document, document.exists {
+                if let isAdmin = document.data()?["isAdmin"] as? Bool {
+                    self.isAdmin = isAdmin
+                } else {
+                    self.isAdmin = false
+                }
+            } else {
+                print("User document does not exist")
+                self.isAdmin = false
+            }
+        }
     }
 }
 

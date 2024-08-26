@@ -39,7 +39,9 @@ struct AdminDashboardView: View {
             })
         }
         .onAppear(perform: loadCourses)
-        .onChange(of: refreshTrigger) { _ in loadCourses() }
+        .onChange(of: refreshTrigger) { _, _ in 
+            loadCourses()
+        }
     }
 
     func loadCourses() {
