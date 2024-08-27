@@ -8,7 +8,7 @@ struct AdminDashboardView: View {
     @State private var users: [User] = []
     @State private var showingAddCourse = false
     @State private var showingDeleteAlert = false
-    @State private var itemToDelete: Any?
+    @State private var courseToDelete: Course?
 
     var body: some View {
         NavigationView {
@@ -21,7 +21,7 @@ struct AdminDashboardView: View {
                             }
                             Spacer()
                             Button(action: {
-                                itemToDelete = course
+                                courseToDelete = course
                                 showingDeleteAlert = true
                             }) {
                                 Image(systemName: "trash")
@@ -33,17 +33,7 @@ struct AdminDashboardView: View {
                 
                 Section(header: Text("Users")) {
                     ForEach(users, id: \.id) { user in
-                        HStack {
-                            Text(user.email)
-                            Spacer()
-                            Button(action: {
-                                itemToDelete = user
-                                showingDeleteAlert = true
-                            }) {
-                                Image(systemName: "trash")
-                                    .foregroundColor(.red)
-                            }
-                        }
+                        Text(user.email)
                     }
                 }
             }
@@ -67,22 +57,15 @@ struct AdminDashboardView: View {
         .alert(isPresented: $showingDeleteAlert) {
             Alert(
                 title: Text("Confirm Deletion"),
-                message: Text("Are you sure you want to delete this item?"),
+                message: Text("Are you sure you want to delete this course?"),
                 primaryButton: .destructive(Text("Delete")) {
-                    deleteItem()
+                    if let course = courseToDelete {
+                        deleteCourse(course)
+                    }
                 },
                 secondaryButton: .cancel()
             )
         }
-    }
-
-    func deleteItem() {
-        if let course = itemToDelete as? Course {
-            deleteCourse(course)
-        } else if let user = itemToDelete as? User {
-            deleteUser(user)
-        }
-        itemToDelete = nil
     }
 
     func deleteCourse(_ course: Course) {
@@ -92,17 +75,6 @@ struct AdminDashboardView: View {
                 print("Error deleting course: \(error)")
             } else {
                 loadCourses()
-            }
-        }
-    }
-
-    func deleteUser(_ user: User) {
-        UserManager.shared.deleteUser(uid: user.id) { result in
-            switch result {
-            case .success():
-                loadUsers()
-            case .failure(let error):
-                print("Error deleting user: \(error)")
             }
         }
     }
