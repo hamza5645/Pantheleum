@@ -2,6 +2,7 @@ import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
 import AVKit
+import AZVideoPlayer
 
 struct CourseDetailView: View {
     let course: Course
@@ -15,7 +16,7 @@ struct CourseDetailView: View {
                 .foregroundColor(Color.pantheleumBlue)
             
             if let player = player {
-                VideoPlayer(player: player)
+                AZVideoPlayer(player: player)
                     .frame(height: 200)
                     .onTapGesture {
                         isFullScreen = true
@@ -47,7 +48,11 @@ struct CourseDetailView: View {
         }
         .fullScreenCover(isPresented: $isFullScreen) {
             if let player = player {
-                FullScreenVideoPlayer(player: player)
+                AZVideoPlayer(player: player)
+                    .edgesIgnoringSafeArea(.all)
+                    .onTapGesture {
+                        isFullScreen = false
+                    }
             }
         }
     }

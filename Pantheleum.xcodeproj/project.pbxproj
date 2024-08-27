@@ -12,6 +12,7 @@
 		2F1323CD2C7BEE4E00C0784A /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 2F1323CC2C7BEE4E00C0784A /* FirebaseDatabase */; };
 		2F1323CF2C7BEE4E00C0784A /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 2F1323CE2C7BEE4E00C0784A /* FirebaseFirestore */; };
 		2F6FCEA82C7E000200099338 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 2F6FCEA72C7E000200099338 /* FirebaseStorage */; };
+		2F6FCED62C7E37D900099338 /* AZVideoPlayer in Frameworks */ = {isa = PBXBuildFile; productRef = 2F6FCED52C7E37D900099338 /* AZVideoPlayer */; };
 		2FF847352C7C7E620037ED36 /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 2FF847342C7C7E620037ED36 /* FirebaseFirestoreCombine-Community */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +37,7 @@
 				2F1323CF2C7BEE4E00C0784A /* FirebaseFirestore in Frameworks */,
 				2F1323C92C7BEE4E00C0784A /* FirebaseAnalytics in Frameworks */,
 				2FF847352C7C7E620037ED36 /* FirebaseFirestoreCombine-Community in Frameworks */,
+				2F6FCED62C7E37D900099338 /* AZVideoPlayer in Frameworks */,
 				2F1323CB2C7BEE4E00C0784A /* FirebaseAuth in Frameworks */,
 				2F6FCEA82C7E000200099338 /* FirebaseStorage in Frameworks */,
 			);
@@ -86,6 +88,7 @@
 				2F1323CE2C7BEE4E00C0784A /* FirebaseFirestore */,
 				2FF847342C7C7E620037ED36 /* FirebaseFirestoreCombine-Community */,
 				2F6FCEA72C7E000200099338 /* FirebaseStorage */,
+				2F6FCED52C7E37D900099338 /* AZVideoPlayer */,
 			);
 			productName = Pantheleum;
 			productReference = 2F1323AE2C7BE40E00C0784A /* Pantheleum.app */;
@@ -117,6 +120,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				2F1323C72C7BEE4E00C0784A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				2F6FCED42C7E37D900099338 /* XCRemoteSwiftPackageReference "AZVideoPlayer" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2F1323AF2C7BE40E00C0784A /* Products */;
@@ -360,6 +364,14 @@
 				minimumVersion = 11.1.0;
 			};
 		};
+		2F6FCED42C7E37D900099338 /* XCRemoteSwiftPackageReference "AZVideoPlayer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/adamzarn/AZVideoPlayer.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -387,6 +399,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2F1323C72C7BEE4E00C0784A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		2F6FCED52C7E37D900099338 /* AZVideoPlayer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2F6FCED42C7E37D900099338 /* XCRemoteSwiftPackageReference "AZVideoPlayer" */;
+			productName = AZVideoPlayer;
 		};
 		2FF847342C7C7E620037ED36 /* FirebaseFirestoreCombine-Community */ = {
 			isa = XCSwiftPackageProductDependency;
