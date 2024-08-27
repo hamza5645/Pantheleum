@@ -5,7 +5,7 @@ import FirebaseAuth
 struct AdminDashboardView: View {
     @Binding var isLoggedIn: Bool
     @State private var courses: [Course] = []
-    @State private var users: [User] = []
+    @State private var regularUsers: [User] = []
     @State private var showingAddCourse = false
 
     var body: some View {
@@ -20,8 +20,8 @@ struct AdminDashboardView: View {
                     .onDelete(perform: deleteCourses)
                 }
                 
-                Section(header: Text("Users")) {
-                    ForEach(users, id: \.id) { user in
+                Section(header: Text("Regular Users")) {
+                    ForEach(regularUsers, id: \.id) { user in
                         Text(user.email)
                     }
                 }
@@ -64,7 +64,7 @@ struct AdminDashboardView: View {
 
     func loadData() {
         loadCourses()
-        loadUsers()
+        loadRegularUsers()
     }
 
     func loadCourses() {
@@ -80,11 +80,11 @@ struct AdminDashboardView: View {
         }
     }
 
-    func loadUsers() {
+    func loadRegularUsers() {
         UserManager.shared.getAllUsers { result in
             switch result {
             case .success(let fetchedUsers):
-                self.users = fetchedUsers
+                self.regularUsers = fetchedUsers.filter { !$0.isAdmin }
             case .failure(let error):
                 print("Failed to fetch users: \(error.localizedDescription)")
             }
