@@ -1,10 +1,12 @@
 import SwiftUI
 import FirebaseFirestore
+import FirebaseStorage
+import UIKit
 
 struct CourseCreationView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var title = ""
-    @State private var description = ""  // Keep this as String, but make it optional when creating the Course
+    @State private var description = ""
     @State private var videoURL = ""
     @State private var errorMessage = ""
     @State private var isLoading = false
@@ -16,7 +18,7 @@ struct CourseCreationView: View {
                 Section(header: Text("Course Details")) {
                     TextField("Title", text: $title)
                     TextField("Description (Optional)", text: $description)
-                    TextField("Video URL", text: $videoURL)
+                    TextField("Video URL from Firebase Storage", text: $videoURL)
                 }
                 
                 if !errorMessage.isEmpty {
@@ -34,7 +36,7 @@ struct CourseCreationView: View {
                             Text("Create Course")
                         }
                     }
-                    .disabled(isLoading || title.isEmpty || videoURL.isEmpty)  // Remove description from this check
+                    .disabled(isLoading || title.isEmpty || videoURL.isEmpty)
                 }
             }
             .navigationBarTitle("Create New Course", displayMode: .inline)

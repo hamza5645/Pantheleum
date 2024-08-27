@@ -1,15 +1,24 @@
 import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
+import AVKit
 
 struct CourseDetailView: View {
     let course: Course
+    @State private var player: AVPlayer?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text(course.title)
                 .font(.title)
                 .foregroundColor(Color.pantheleumBlue)
+            
+            if let player = player {
+                VideoPlayer(player: player)
+                    .frame(height: 200)
+            } else {
+                Text("Loading video...")
+            }
             
             Text(course.description ?? "")
                 .font(.body)
@@ -18,7 +27,7 @@ struct CourseDetailView: View {
                 .font(.headline)
                 .padding(.top)
             
-            Text("This is where you would display the course content, such as video lectures, reading materials, and interactive exercises.")
+            Text("This is where you would display additional course content, such as reading materials and interactive exercises.")
                 .font(.body)
             
             Spacer()
@@ -26,6 +35,20 @@ struct CourseDetailView: View {
         .padding()
         .navigationBarTitleDisplayMode(.inline)
         .foregroundColor(Color.pantheleumText)
+        .onAppear {
+            loadVideo()
+        }
+        .onDisappear {
+            player?.pause()
+        }
+    }
+    
+    private func loadVideo() {
+        guard let url = URL(string: course.videoURL) else {
+            print("Invalid video URL")
+            return
+        }
+        player = AVPlayer(url: url)
     }
 }
 

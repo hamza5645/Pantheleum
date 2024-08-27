@@ -11,6 +11,7 @@
 		2F1323CB2C7BEE4E00C0784A /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 2F1323CA2C7BEE4E00C0784A /* FirebaseAuth */; };
 		2F1323CD2C7BEE4E00C0784A /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 2F1323CC2C7BEE4E00C0784A /* FirebaseDatabase */; };
 		2F1323CF2C7BEE4E00C0784A /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 2F1323CE2C7BEE4E00C0784A /* FirebaseFirestore */; };
+		2F6FCEA82C7E000200099338 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 2F6FCEA72C7E000200099338 /* FirebaseStorage */; };
 		2FF847352C7C7E620037ED36 /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 2FF847342C7C7E620037ED36 /* FirebaseFirestoreCombine-Community */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +37,7 @@
 				2F1323C92C7BEE4E00C0784A /* FirebaseAnalytics in Frameworks */,
 				2FF847352C7C7E620037ED36 /* FirebaseFirestoreCombine-Community in Frameworks */,
 				2F1323CB2C7BEE4E00C0784A /* FirebaseAuth in Frameworks */,
+				2F6FCEA82C7E000200099338 /* FirebaseStorage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +93,7 @@
 				2F1323CC2C7BEE4E00C0784A /* FirebaseDatabase */,
 				2F1323CE2C7BEE4E00C0784A /* FirebaseFirestore */,
 				2FF847342C7C7E620037ED36 /* FirebaseFirestoreCombine-Community */,
+				2F6FCEA72C7E000200099338 /* FirebaseStorage */,
 			);
 			productName = Pantheleum;
 			productReference = 2F1323AE2C7BE40E00C0784A /* Pantheleum.app */;
@@ -385,6 +388,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2F1323C72C7BEE4E00C0784A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		2F6FCEA72C7E000200099338 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2F1323C72C7BEE4E00C0784A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 		2FF847342C7C7E620037ED36 /* FirebaseFirestoreCombine-Community */ = {
 			isa = XCSwiftPackageProductDependency;
