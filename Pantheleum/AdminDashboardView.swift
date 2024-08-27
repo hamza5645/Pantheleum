@@ -20,7 +20,7 @@ struct AdminDashboardView: View {
                     .onDelete(perform: deleteCourses)
                 }
                 
-                Section(header: Text("Regular Users")) {
+                Section(header: Text("Users")) {
                     ForEach(regularUsers, id: \.id) { user in
                         Text(user.email)
                     }

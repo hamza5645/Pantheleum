@@ -28,13 +28,6 @@ struct CourseDetailView: View {
             Text(course.description ?? "")
                 .font(.body)
             
-            Text("Course Content")
-                .font(.headline)
-                .padding(.top)
-            
-            Text("This is where you would display additional course content, such as reading materials and interactive exercises.")
-                .font(.body)
-            
             Spacer()
         }
         .padding()
