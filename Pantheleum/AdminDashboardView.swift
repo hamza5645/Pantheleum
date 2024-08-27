@@ -7,26 +7,14 @@ struct AdminDashboardView: View {
     @State private var courses: [Course] = []
     @State private var users: [User] = []
     @State private var showingAddCourse = false
-    @State private var showingDeleteAlert = false
-    @State private var courseToDelete: Course?
 
     var body: some View {
         NavigationView {
             List {
                 Section(header: Text("Courses")) {
                     ForEach(courses) { course in
-                        HStack {
-                            NavigationLink(destination: CourseEditView(course: course, onCourseUpdated: loadCourses)) {
-                                Text(course.title)
-                            }
-                            Spacer()
-                            Button(action: {
-                                courseToDelete = course
-                                showingDeleteAlert = true
-                            }) {
-                                Image(systemName: "trash")
-                                    .foregroundColor(.red)
-                            }
+                        NavigationLink(destination: CourseEditView(course: course, onCourseUpdated: loadCourses, onCourseDeleted: loadCourses)) {
+                            Text(course.title)
                         }
                     }
                 }
@@ -53,29 +41,6 @@ struct AdminDashboardView: View {
                 loadCourses()
                 showingAddCourse = false
             })
-        }
-        .alert(isPresented: $showingDeleteAlert) {
-            Alert(
-                title: Text("Confirm Deletion"),
-                message: Text("Are you sure you want to delete this course?"),
-                primaryButton: .destructive(Text("Delete")) {
-                    if let course = courseToDelete {
-                        deleteCourse(course)
-                    }
-                },
-                secondaryButton: .cancel()
-            )
-        }
-    }
-
-    func deleteCourse(_ course: Course) {
-        let db = Firestore.firestore()
-        db.collection("courses").document(course.id).delete { error in
-            if let error = error {
-                print("Error deleting course: \(error)")
-            } else {
-                loadCourses()
-            }
         }
     }
 
