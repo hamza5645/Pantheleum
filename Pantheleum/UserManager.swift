@@ -2,7 +2,7 @@ import Foundation
 import FirebaseAuth
 import FirebaseFirestore
 
-struct User: Codable {
+struct User: Codable, Identifiable {
     let id: String
     let email: String
     var isAdmin: Bool
@@ -65,6 +65,16 @@ class UserManager {
                     return User(id: document.documentID, email: email, isAdmin: isAdmin)
                 } ?? []
                 completion(.success(users))
+            }
+        }
+    }
+    
+    func deleteUser(uid: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        db.collection("users").document(uid).delete { error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success(()))
             }
         }
     }

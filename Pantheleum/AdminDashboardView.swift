@@ -7,21 +7,43 @@ struct AdminDashboardView: View {
     @State private var courses: [Course] = []
     @State private var users: [User] = []
     @State private var showingAddCourse = false
+    @State private var showingDeleteAlert = false
+    @State private var itemToDelete: Any?
 
     var body: some View {
         NavigationView {
             List {
                 Section(header: Text("Courses")) {
                     ForEach(courses) { course in
-                        NavigationLink(destination: CourseEditView(course: course, onCourseUpdated: loadCourses)) {
-                            Text(course.title)
+                        HStack {
+                            NavigationLink(destination: CourseEditView(course: course, onCourseUpdated: loadCourses)) {
+                                Text(course.title)
+                            }
+                            Spacer()
+                            Button(action: {
+                                itemToDelete = course
+                                showingDeleteAlert = true
+                            }) {
+                                Image(systemName: "trash")
+                                    .foregroundColor(.red)
+                            }
                         }
                     }
                 }
                 
                 Section(header: Text("Users")) {
                     ForEach(users, id: \.id) { user in
-                        Text(user.email)
+                        HStack {
+                            Text(user.email)
+                            Spacer()
+                            Button(action: {
+                                itemToDelete = user
+                                showingDeleteAlert = true
+                            }) {
+                                Image(systemName: "trash")
+                                    .foregroundColor(.red)
+                            }
+                        }
                     }
                 }
             }
@@ -41,6 +63,47 @@ struct AdminDashboardView: View {
                 loadCourses()
                 showingAddCourse = false
             })
+        }
+        .alert(isPresented: $showingDeleteAlert) {
+            Alert(
+                title: Text("Confirm Deletion"),
+                message: Text("Are you sure you want to delete this item?"),
+                primaryButton: .destructive(Text("Delete")) {
+                    deleteItem()
+                },
+                secondaryButton: .cancel()
+            )
+        }
+    }
+
+    func deleteItem() {
+        if let course = itemToDelete as? Course {
+            deleteCourse(course)
+        } else if let user = itemToDelete as? User {
+            deleteUser(user)
+        }
+        itemToDelete = nil
+    }
+
+    func deleteCourse(_ course: Course) {
+        let db = Firestore.firestore()
+        db.collection("courses").document(course.id).delete { error in
+            if let error = error {
+                print("Error deleting course: \(error)")
+            } else {
+                loadCourses()
+            }
+        }
+    }
+
+    func deleteUser(_ user: User) {
+        UserManager.shared.deleteUser(uid: user.id) { result in
+            switch result {
+            case .success():
+                loadUsers()
+            case .failure(let error):
+                print("Error deleting user: \(error)")
+            }
         }
     }
 
