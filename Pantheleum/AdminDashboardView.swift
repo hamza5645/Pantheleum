@@ -17,6 +17,7 @@ struct AdminDashboardView: View {
                             Text(course.title)
                         }
                     }
+                    .onDelete(perform: deleteCourses)
                 }
                 
                 Section(header: Text("Users")) {
@@ -42,6 +43,23 @@ struct AdminDashboardView: View {
                 showingAddCourse = false
             })
         }
+    }
+
+    func deleteCourses(at offsets: IndexSet) {
+        let coursesToDelete = offsets.map { courses[$0] }
+        let db = Firestore.firestore()
+        
+        for course in coursesToDelete {
+            db.collection("courses").document(course.id).delete { error in
+                if let error = error {
+                    print("Error deleting course: \(error)")
+                } else {
+                    print("Course successfully deleted")
+                }
+            }
+        }
+        
+        courses.remove(atOffsets: offsets)
     }
 
     func loadData() {
