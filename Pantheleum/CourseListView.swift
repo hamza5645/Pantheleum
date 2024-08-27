@@ -58,6 +58,34 @@ struct CourseListView: View {
     
     func loadAssignedCourses() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
+        UserManager.shared.getUser(uid: uid) { result in
+            switch result {
+            case .success(let user):
+                if user.isAdmin {
+                    self.loadAllCourses()
+                } else {
+                    self.loadUserCourses(uid: uid)
+                }
+            case .failure(let error):
+                print("Error getting user: \(error)")
+            }
+        }
+    }
+    
+    func loadAllCourses() {
+        let db = Firestore.firestore()
+        db.collection("courses").getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error getting documents: \(error)")
+            } else {
+                self.courses = querySnapshot?.documents.compactMap { document in
+                    Course(document: document)
+                } ?? []
+            }
+        }
+    }
+    
+    func loadUserCourses(uid: String) {
         let db = Firestore.firestore()
         db.collection("courses")
             .whereField("assignedUsers", arrayContains: uid)

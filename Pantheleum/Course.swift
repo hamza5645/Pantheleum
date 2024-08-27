@@ -2,9 +2,9 @@ import FirebaseFirestore
 
 struct Course: Identifiable, Codable {
     var id: String
-    let title: String
-    let description: String?
-    let videoURL: String
+    var title: String
+    var description: String?
+    var videoURL: String
     var assignedUsers: [String]
     
     enum CodingKeys: String, CodingKey {
