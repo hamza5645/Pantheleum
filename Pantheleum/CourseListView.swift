@@ -6,6 +6,7 @@ import AVKit
 struct CourseDetailView: View {
     let course: Course
     @State private var player: AVPlayer?
+    @State private var isFullScreen = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -16,6 +17,9 @@ struct CourseDetailView: View {
             if let player = player {
                 VideoPlayer(player: player)
                     .frame(height: 200)
+                    .onTapGesture {
+                        isFullScreen = true
+                    }
             } else {
                 Text("Loading video...")
             }
@@ -41,6 +45,11 @@ struct CourseDetailView: View {
         .onDisappear {
             player?.pause()
         }
+        .fullScreenCover(isPresented: $isFullScreen) {
+            if let player = player {
+                FullScreenVideoPlayer(player: player)
+            }
+        }
     }
     
     private func loadVideo() {
@@ -48,7 +57,16 @@ struct CourseDetailView: View {
             print("Invalid video URL")
             return
         }
-        player = AVPlayer(url: url)
+        let playerItem = AVPlayerItem(url: url)
+        player = AVPlayer(playerItem: playerItem)
+        
+        // Enable audio playback when device is silent
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("Failed to set audio session category: \(error)")
+        }
     }
 }
 
