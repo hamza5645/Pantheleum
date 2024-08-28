@@ -7,6 +7,11 @@ struct CourseEditView: View {
     @State private var allUsers: [User] = []
     @State private var selectedUsers: Set<String> = Set()
     @State private var showingDeleteAlert = false
+    @State private var errorMessage = ""
+    @State private var isLoading = false
+    @State private var pdfURLs: [URL] = []
+    @State private var pdfFileNames: [String] = []
+    @State private var showingDocumentPicker = false
     var onCourseUpdated: () -> Void
     var onCourseDeleted: () -> Void
     
@@ -39,15 +44,40 @@ struct CourseEditView: View {
                 }
             }
             
+            Section(header: Text("Course PDFs")) {
+                if let existingPDFs = course.pdfURLs {
+                    ForEach(existingPDFs.indices, id: \.self) { index in
+                        Text(URL(string: existingPDFs[index])?.lastPathComponent ?? "Unknown PDF")
+                    }
+                    .onDelete(perform: deletePDF)
+                }
+                
+                ForEach(pdfFileNames.indices, id: \.self) { index in
+                    Text(pdfFileNames[index])
+                }
+                .onDelete(perform: deleteNewPDF)
+                
+                Button("Add files") {
+                    showingDocumentPicker = true
+                }
+            }
+            
             Section {
                 Button("Save Changes") {
-                    saveCourse()
+                    updateCourse()
                 }
                 
                 Button("Delete Course") {
                     showingDeleteAlert = true
                 }
                 .foregroundColor(.red)
+            }
+            
+            if !errorMessage.isEmpty {
+                Section {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                }
             }
         }
         .navigationTitle("Edit Course")
@@ -62,6 +92,9 @@ struct CourseEditView: View {
             )
         }
         .onAppear(perform: loadAllUsers)
+        .sheet(isPresented: $showingDocumentPicker) {
+            DocumentPicker(urls: $pdfURLs, fileNames: $pdfFileNames)
+        }
     }
     
     private func loadAllUsers() {
@@ -76,13 +109,57 @@ struct CourseEditView: View {
         }
     }
     
-    private func saveCourse() {
+    func deletePDF(at offsets: IndexSet) {
+        course.pdfURLs?.remove(atOffsets: offsets)
+    }
+    
+    func deleteNewPDF(at offsets: IndexSet) {
+        pdfURLs.remove(atOffsets: offsets)
+        pdfFileNames.remove(atOffsets: offsets)
+    }
+    
+    func updateCourse() {
+        isLoading = true
+        errorMessage = ""
+        
+        let group = DispatchGroup()
+        var uploadedPDFURLs = course.pdfURLs ?? []
+        
+        for (index, pdfURL) in pdfURLs.enumerated() {
+            group.enter()
+            guard let pdfData = try? Data(contentsOf: pdfURL) else {
+                errorMessage = "Failed to read PDF data"
+                isLoading = false
+                return
+            }
+            
+            StorageManager.shared.uploadPDF(data: pdfData, fileName: pdfFileNames[index]) { result in
+                switch result {
+                case .success(let pdfURLString):
+                    uploadedPDFURLs.append(pdfURLString)
+                case .failure(let error):
+                    DispatchQueue.main.async {
+                        self.errorMessage = "Error uploading PDF: \(error.localizedDescription)"
+                    }
+                }
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: .main) {
+            self.updateCourseWithPDFs(pdfURLStrings: uploadedPDFURLs)
+        }
+    }
+
+    func updateCourseWithPDFs(pdfURLStrings: [String]) {
+        course.pdfURLs = pdfURLStrings
         course.assignedUsers = Array(selectedUsers)
         
         let db = Firestore.firestore()
         db.collection("courses").document(course.id).setData(course.dictionary) { error in
+            isLoading = false
             if let error = error {
-                print("Error updating document: \(error)")
+                errorMessage = "Error updating course: \(error.localizedDescription)"
             } else {
                 onCourseUpdated()
                 presentationMode.wrappedValue.dismiss()

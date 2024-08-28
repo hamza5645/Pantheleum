@@ -28,6 +28,24 @@ struct CourseDetailView: View {
             Text(course.description ?? "")
                 .font(.body)
             
+            if let pdfURLs = course.pdfURLs, !pdfURLs.isEmpty {
+                Text("Course Material")
+                    .font(.headline)
+                    .foregroundColor(Color.pantheleumBlue)
+                
+                ForEach(pdfURLs, id: \.self) { pdfURLString in
+                    if let url = URL(string: pdfURLString) {
+                        Link(destination: url) {
+                            HStack {
+                                Image(systemName: "doc.fill")
+                                Text(url.lastPathComponent)
+                            }
+                            .foregroundColor(Color.pantheleumText)
+                        }
+                    }
+                }
+            }
+            
             Spacer()
         }
         .padding()
